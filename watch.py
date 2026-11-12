@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 
 from catch_stars import CatchStars, draw
+from neural_network import PolicyVisualizer
 from train import choose_action
 
 
@@ -33,7 +34,10 @@ def main():
     try:
         game = CatchStars(seed=args.seed)
         rng = random.Random(args.seed)
-        screen = pg.display.set_mode((game.WIDTH, game.HEIGHT))
+        visualizer = PolicyVisualizer(pg)
+        screen = pg.display.set_mode((game.WIDTH + visualizer.WIDTH, game.HEIGHT))
+        game_surface = screen.subsurface((0, 0, game.WIDTH, game.HEIGHT))
+        policy_surface = screen.subsurface((game.WIDTH, 0, visualizer.WIDTH, game.HEIGHT))
         pg.display.set_caption("Catch Stars — Watch the Trained Agent")
         clock = pg.time.Clock()
         font = pg.font.Font(None, 28)
@@ -57,14 +61,17 @@ def main():
 
             if not paused and not game.done:
                 if frames_left == 0:
-                    action = choose_action(table, game.get_state(), rng)
+                    state = game.get_state()
+                    action = choose_action(table, state, rng)
+                    visualizer.record(table, state, action)
                     frames_left = repeat
                 _, reward, _, _ = game.step(action)
                 frames_left -= 1
                 if reward:
                     frames_left = 0
 
-            draw(game, pg, screen, font)
+            visualizer.draw(policy_surface, paused, game.done)
+            draw(game, pg, game_surface, font)
             clock.tick(game.FPS)
     finally:
         pg.quit()
