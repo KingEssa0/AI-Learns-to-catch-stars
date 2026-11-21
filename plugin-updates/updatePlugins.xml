@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+  <plugin id="local.source.replay" url="https://raw.githubusercontent.com/KingEssa0/AI-Learns-to-catch-stars/main/plugin-updates/source-replay-intellij-1.2.1.zip" version="1.2.1">
+    <idea-version since-build="263"/>
+    <name>Source Replay</name>
+  </plugin>
+</plugins>
